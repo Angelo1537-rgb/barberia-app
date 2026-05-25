@@ -46,9 +46,9 @@ export default function CalendarioCitas() {
       .lte('fecha_hora', fin.toISOString())
       .order('fecha_hora', { ascending: true });
 
-    if (!error) {
-      setCitas(data ?? []);
-    }
+  if (!error && data) {
+  setCitas(data as any);
+}
     setCargando(false);
   };
 
