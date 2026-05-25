@@ -25,32 +25,32 @@ export default function CalendarioCitas() {
   }, [fechaActual, filtroEstado]);
 
   const cargarCitas = async () => {
-    setCargando(true);
-    const supabase = crearSupabaseBrowser();
+  setCargando(true);
+  const supabase = crearSupabaseBrowser();
 
-    // Obtener citas del mes actual
-    const inicio = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
-    const fin = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
+  // Obtener citas del mes actual
+  const inicio = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
+  const fin = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0);
 
-    const { data, error } = await supabase
-      .from('citas')
-      .select(
-        `
-        id, fecha_hora, estado,
-        cliente:cliente_id ( nombre, telefono ),
-        servicio:servicio_id ( nombre, precio_eur, duracion_min )
+  const { data, error } = await supabase
+    .from('citas')
+    .select(
       `
-      )
-      .eq('estado', filtroEstado)
-      .gte('fecha_hora', inicio.toISOString())
-      .lte('fecha_hora', fin.toISOString())
-      .order('fecha_hora', { ascending: true });
+      id, fecha_hora, estado,
+      cliente:cliente_id ( nombre, telefono ),
+      servicio:servicio_id ( nombre, precio_eur, duracion_min )
+    `
+    )
+    .eq('estado', filtroEstado)
+    .gte('fecha_hora', inicio.toISOString())
+    .lte('fecha_hora', fin.toISOString())
+    .order('fecha_hora', { ascending: true });
 
   if (!error && data) {
-  setCitas(data as any);
-}
-    setCargando(false);
-  };
+    setCitas(data as unknown as CitaConDetalles[]);
+  }
+  setCargando(false);
+};
 
   const cambiarMes = (direccion: 1 | -1) => {
     setFechaActual(
