@@ -1,49 +1,17 @@
-// middleware.ts
 import { type NextRequest, NextResponse } from 'next/server';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Solo proteger rutas /admin
-  if (!pathname.startsWith('/admin')) {
-    return NextResponse.next();
-  }
-
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
-      },
+  // Si intenta ir a /admin sin estar logueado, redirige a /login
+  if (pathname.startsWith('/admin')) {
+    const token = request.cookies.get('sb-access-token');
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
     }
-  );
-
-  // Verificar sesión
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Si no hay usuario, redirigir a login
-  if (!user && pathname.startsWith('/admin')) {
-    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {

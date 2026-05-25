@@ -10,8 +10,8 @@ interface CitaConDetalles {
   id: string;
   fecha_hora: string;
   estado: string;
-  cliente: { nombre: string; telefono: string };
-  servicio: { nombre: string; precio_eur: number; duracion_min: number };
+  cliente: { nombre: string; telefono: string } | { nombre: string; telefono: string }[];
+  servicio: { nombre: string; precio_eur: number; duracion_min: number } | { nombre: string; precio_eur: number; duracion_min: number }[];
 }
 
 export default function CalendarioCitas() {
