@@ -1,4 +1,4 @@
-// Middleware para proteger las rutas /admin
+// middleware.ts
 import { type NextRequest, NextResponse } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
@@ -33,13 +33,13 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Verificar sesión del usuario
+  // Verificar sesión
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Si no hay usuario logueado, redirigir a /login
-  if (!user) {
+  // Si no hay usuario, redirigir a login
+  if (!user && pathname.startsWith('/admin')) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
