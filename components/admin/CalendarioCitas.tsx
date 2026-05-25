@@ -47,7 +47,17 @@ export default function CalendarioCitas() {
     .order('fecha_hora', { ascending: true });
 
   if (!error && data) {
-    setCitas(data as unknown as CitaConDetalles[]);
+    // Mapear correctamente los datos
+    const citasFormateadas = data.map((cita: any) => ({
+      id: cita.id,
+      fecha_hora: cita.fecha_hora,
+      estado: cita.estado,
+      cliente: Array.isArray(cita.cliente) ? cita.cliente[0] : cita.cliente,
+      servicio: Array.isArray(cita.servicio) ? cita.servicio[0] : cita.servicio,
+    }));
+    setCitas(citasFormateadas);
+  } else {
+    setCitas([]);
   }
   setCargando(false);
 };
